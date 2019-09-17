@@ -23,12 +23,11 @@ export default class SearchBar extends Component {
       <div>
         <form>
           <fieldset>
-            <label> Search:
+            <legend>Filter Notes</legend>
               <input
                 value={this.state.searchTerm}
                 onChange={(e) => this.updateSearch(e.target.value)}
               />
-            </label>
             <label>Title
               <input 
                 type='radio'
@@ -47,7 +46,7 @@ export default class SearchBar extends Component {
             </label>
             <input 
               type='submit'
-              value='Search'
+              value='Filter'
             />
           </fieldset>
         </form>

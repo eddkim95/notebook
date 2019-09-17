@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SearchBar from  './SearchBar';
-import NotesList from './NotesList'
+import NewNote from './NewNote';
+import NotesList from './NotesList';
 
 export default class NotebookContainer extends Component {
   constructor(props) {
@@ -10,6 +11,7 @@ export default class NotebookContainer extends Component {
       search: '',
       searchBy: '',
     }
+    this.createNote = this.createNote.bind(this)
   }
 
   componentDidMount() {
@@ -17,7 +19,25 @@ export default class NotebookContainer extends Component {
       .then(res => res.json())
       .then(notes => {
         console.log(notes)
-        this.setState({ notes })
+        this.setState({ notes: notes.reverse() })
+      })
+  }
+
+  createNote(e, note) {
+    e.preventDefault();
+    console.log(JSON.stringify(note))
+    fetch('http://localhost:8080/notes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(note),
+    })
+      .then(res => res.json())
+      .then(note => {
+        console.log(note)
+        let stateCopy = [note, ...this.state.notes];
+        this.setState({notes: stateCopy})
       })
   }
 
@@ -25,6 +45,7 @@ export default class NotebookContainer extends Component {
     return (
       <div>
         <SearchBar />
+        <NewNote createNote={this.createNote} />
         <NotesList notes={this.state.notes}/>
       </div>
     )
