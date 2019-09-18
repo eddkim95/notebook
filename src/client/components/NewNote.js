@@ -18,7 +18,8 @@ export default class NewNote extends Component {
   }
 
   addTag() {
-    this.setState({tags:[this.state.tag, ...this.state.tags], tag: ''})
+    const { tag, tags } = this.state;
+    if (tag) this.setState({tags:[tag, ...tags], tag: ''})
   }
 
   deleteTag(tagIndex) {
@@ -33,6 +34,7 @@ export default class NewNote extends Component {
         <form onSubmit={(e) => {
           e.preventDefault();
           this.props.createNote({title: this.state.title, content: this.state.content});
+          this.setState({ title: '', content: '', tag: '', tags: [] });
         }}>
           <fieldset>
             <legend>Create Note</legend>

@@ -13,10 +13,19 @@ const Note = require('../schemas/NoteSchema');
 
    createNote(req, res, next) {
      const { title, content } = req.body;
-     Note.create({ title, content }, (err, note) => {
+     Note.create({ title, content }, (err, newNote) => {
        if (err) return res.status(400).send(err);
-       res.locals.new_note = note;
+       res.locals.new_note = newNote;
        next();
+     })
+   },
+
+   deleteNote(req, res, next) {
+     const { id } = req.body;
+     Note.deleteOne({ _id: id }, (err) => {
+      if (err) return res.status(400).send(err);
+      res.status(200);
+      next();
      })
    }
  }

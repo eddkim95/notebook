@@ -10,6 +10,7 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -20,6 +21,10 @@ app.get('/notes', NoteController.getNotes, (req, res) => {
 
 app.post('/notes', NoteController.createNote, (req, res) => {
   res.status(200).send(res.locals.new_note)
+});
+
+app.delete('/notes', NoteController.deleteNote, (req, res) => {
+  res.end();
 })
 
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }, (err) => {

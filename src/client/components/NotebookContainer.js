@@ -28,6 +28,22 @@ export default class NotebookContainer extends Component {
     this.setState({ searchTerm, searchBasis })
   }
 
+  filteredNotes() {
+    const { notes, searchTerm, searchBasis } = this.state;
+    if (!searchTerm) return notes;
+    if (searchBasis === 'tags') {
+      return notes.filter((note) => {
+        return note[searchBasis].map((toSearch) => {
+          return toSearch.toLowerCase()
+        }).includes(searchTerm.toLowerCase())
+      })
+    } else {
+      return notes.filter((note) => {
+        return note[searchBasis].toLowerCase().includes(searchTerm.toLowerCase())
+      })
+    }
+  }
+
   createNote(note) {
     console.log(JSON.stringify(note))
     fetch('http://localhost:8080/notes', {
@@ -39,29 +55,38 @@ export default class NotebookContainer extends Component {
     })
       .then(res => res.json())
       .then(note => {
-        console.log(note)
-        this.setState({notes: [note, ...this.state.notes]})
+        console.log(note);
+        this.setState({ notes: [note, ...this.state.notes] });
       })
   }
 
   deleteNote(noteID) {
     const { notes } = this.state;
+    console.log(noteID)
     let deleteIndex = notes.findIndex(x => x._id === noteID)
     let updatedNotes = notes.slice(0, deleteIndex).concat(notes.slice(deleteIndex + 1))
     this.setState({ notes: updatedNotes });
+    fetch('http://localhost:8080/notes', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: noteID }),
+    })
   }
 
   render() {
     const { notes, searchTerm, searchBasis } = this.state;
-    console.log(notes)
-    let filteredNotes = !searchTerm ? notes : notes.filter((note) => {
-      return note[searchBasis].toLowerCase().includes(searchTerm.toLowerCase())
-    })
+    console.log(this.state)
+    // let filteredNotes = !searchTerm ? notes : notes.filter((note) => {
+    //   return note[searchBasis].toLowerCase().includes(searchTerm.toLowerCase())
+    // })
+
     return (
       <div>
         <SearchBar setFilter={this.setFilter} />
         <NewNote createNote={this.createNote} />
-        <NotesList notes={filteredNotes} deleteNote={this.deleteNote}/>
+        <NotesList notes={this.filteredNotes()} deleteNote={this.deleteNote}/>
       </div>
     )
   }
