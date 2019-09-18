@@ -33,7 +33,7 @@ export default class NewNote extends Component {
       <div>
         <form onSubmit={(e) => {
           e.preventDefault();
-          this.props.createNote({title: this.state.title, content: this.state.content});
+          this.props.createNote({title: this.state.title, content: this.state.content, tags: this.state.tags});
           this.setState({ title: '', content: '', tag: '', tags: [] });
         }}>
           <fieldset>

@@ -46,7 +46,7 @@ export default class SearchBar extends Component {
               <input 
                 type='radio'
                 name='searchBasis'
-                id='tag'
+                id='tags'
                 onClick={(e) => this.setSearchBasis(e.target.id)}
               />
             </label>

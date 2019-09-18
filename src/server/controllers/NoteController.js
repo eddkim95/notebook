@@ -12,8 +12,8 @@ const Note = require('../schemas/NoteSchema');
    },
 
    createNote(req, res, next) {
-     const { title, content } = req.body;
-     Note.create({ title, content }, (err, newNote) => {
+     const { title, content, tags } = req.body;
+     Note.create({ title, content, tags }, (err, newNote) => {
        if (err) return res.status(400).send(err);
        res.locals.new_note = newNote;
        next();
