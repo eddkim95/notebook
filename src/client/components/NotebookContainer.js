@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import SearchBar from  './SearchBar';
 import NewNote from './NewNote';
 import NotesList from './NotesList';
+import NoteEditor from './NoteEditor';
 
 export default class NotebookContainer extends Component {
   constructor(props) {
@@ -10,10 +11,14 @@ export default class NotebookContainer extends Component {
       notes: [],
       searchTerm: '',
       searchBasis: '',
+      showPopup: false,
+      toEdit: null,
     }
     this.createNote = this.createNote.bind(this)
     this.setFilter = this.setFilter.bind(this)
     this.deleteNote = this.deleteNote.bind(this)
+    this.beginEdit = this.beginEdit.bind(this)
+    this.submitEdit = this.submitEdit.bind(this)
   }
 
   componentDidMount() {
@@ -75,18 +80,45 @@ export default class NotebookContainer extends Component {
     })
   }
 
-  render() {
-    const { notes, searchTerm, searchBasis } = this.state;
-    console.log(this.state)
-    // let filteredNotes = !searchTerm ? notes : notes.filter((note) => {
-    //   return note[searchBasis].toLowerCase().includes(searchTerm.toLowerCase())
-    // })
+  beginEdit(note) {
+    this.setState({ showPopup: true, toEdit: note });
+  }
 
+  submitEdit(editedNote) {
+    if (!editedNote) return this.setState({ showPopup: false, toEdit: null});
+    const { notes } = this.state;
+    const { title, content, tags, _id } = editedNote;
+    console.log('EDITED NOTE', editedNote)
+    let replaceIndex = notes.findIndex(x => x._id === _id)
+    let updatedNotes = notes.slice(0, replaceIndex).concat(editedNote, notes.slice(replaceIndex + 1))
+    this.setState({ notes: updatedNotes, showPopup: false, toEdit: null })
+    fetch('http://localhost:8080/notes', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(editedNote),
+    })
+  }
+
+  render() {
+    console.log(this.state)
     return (
       <div>
+        { this.state.showPopup ? 
+          <NoteEditor
+            submitEdit={this.submitEdit}
+            toEdit={this.state.toEdit}
+          /> :
+          null
+        }
         <SearchBar setFilter={this.setFilter} />
         <NewNote createNote={this.createNote} />
-        <NotesList notes={this.filteredNotes()} deleteNote={this.deleteNote}/>
+        <NotesList
+          notes={this.filteredNotes()}
+          deleteNote={this.deleteNote}
+          beginEdit={this.beginEdit}
+        />
       </div>
     )
   }

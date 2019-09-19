@@ -27,6 +27,14 @@ const Note = require('../schemas/NoteSchema');
       res.status(200);
       next();
      })
+   },
+
+   updateNote(req, res, next) {
+     const { _id, title, content, tags } = req.body;
+     Note.updateOne({ _id }, { title, content, tags }, (err, updatedNote) => {
+      if (err) return res.status(400).send(err);
+      next()
+     })
    }
  }
 
